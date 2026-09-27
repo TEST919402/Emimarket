@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EmiMarket – Kaufen & Verkaufen</title>
+<style>
+:root{--blue:#1769ff;--dark:#132238;--bg:#f5f7fb;--card:#fff;--muted:#6b7280;--line:#e5e7eb;--red:#ef4444}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--dark)}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.nav{max-width:1180px;margin:auto;padding:14px 18px;display:flex;align-items:center;gap:18px}.logo{font-size:25px;font-weight:900;color:var(--blue);white-space:nowrap}.search{display:flex;flex:1;gap:8px}.search input{flex:1;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#f8fafc}.search button,.primary{background:var(--blue);color:#fff;border-radius:11px;padding:11px 16px;font-weight:700}.navlink{background:transparent;color:var(--dark);font-weight:700}.iconbtn{background:#f1f5f9;border-radius:11px;padding:10px 12px}
+main{max-width:1180px;margin:auto;padding:24px 18px}.hero{background:linear-gradient(135deg,#0f4bdc,#2d8cff);color:#fff;border-radius:22px;padding:34px;margin-bottom:22px}.hero h1{font-size:clamp(28px,5vw,44px);margin:0 0 8px}.hero p{margin:0 0 20px;opacity:.92}.hero .primary{background:#fff;color:#1356d9}
+.filters{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;margin-bottom:20px}.field{background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 12px}
+.categories{display:flex;gap:9px;overflow:auto;padding-bottom:8px;margin-bottom:22px}.cat{background:#fff;border:1px solid var(--line);padding:9px 13px;border-radius:999px;white-space:nowrap}.cat.active{background:#e8f0ff;color:var(--blue);border-color:#bcd1ff}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}.toolbar h2{margin:0}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:var(--card);border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 3px 12px #102a4309;position:relative}.pic{height:180px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:55px}.cardbody{padding:13px}.title{font-weight:800;margin-bottom:7px}.price{font-weight:900;font-size:19px}.meta{color:var(--muted);font-size:13px;margin-top:7px}.heart{position:absolute;right:10px;top:10px;border-radius:50%;width:38px;height:38px;background:#fff;font-size:19px;box-shadow:0 2px 8px #0002}.heart.on{color:var(--red)}
+.empty{padding:40px;text-align:center;color:var(--muted);grid-column:1/-1}.modalback{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal{background:#fff;border-radius:20px;width:min(600px,100%);max-height:90vh;overflow:auto;padding:22px}.modal h2{margin-top:0}.close{float:right;background:#eef2f7;border-radius:50%;width:34px;height:34px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.formgrid .full{grid-column:1/-1}.formgrid label{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px}.formgrid input,.formgrid select,.formgrid textarea{border:1px solid var(--line);border-radius:10px;padding:11px}.messages{display:grid;grid-template-columns:180px 1fr;gap:15px}.people button{display:block;width:100%;text-align:left;padding:11px;background:#f8fafc;border-radius:9px;margin-bottom:6px}.chat{border:1px solid var(--line);border-radius:12px;padding:14px;min-height:260px}.bubble{background:#eef4ff;padding:10px;border-radius:12px;margin:7px 0}.bubble.me{background:#1769ff;color:#fff;margin-left:20%}.profile{display:flex;align-items:center;gap:12px}.avatar{width:48px;height:48px;border-radius:50%;background:#dbeafe;display:grid;place-items:center;font-weight:900;color:var(--blue)}
+footer{text-align:center;color:var(--muted);padding:35px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}.nav{flex-wrap:wrap}.search{order:2;flex-basis:100%}}
+@media(max-width:560px){.grid{grid-template-columns:1fr 1fr;gap:10px}.pic{height:135px}.navlink{display:none}.hero{padding:24px}.filters{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.formgrid .full{grid-column:auto}.messages{grid-template-columns:1fr}.logo{font-size:22px}}
+</style>
+</head>
+<body>
+<header class="top"><nav class="nav">
+<div class="logo">EmiMarket</div>
+<div class="search"><input id="search" placeholder="🔎 Was möchtest du finden?"><button onclick="render()">Suchen</button></div>
+<button class="navlink" onclick="openModal('messagesModal')">💬 Nachrichten</button>
+<button class="iconbtn" onclick="openModal('profileModal')">👤</button>
+<button class="primary" onclick="openModal('addModal')">＋ Anzeige</button>
+</nav></header>
+
+<main>
+<section class="hero"><h1>Kaufen. Verkaufen. Einfach.</h1><p>Finde tolle Angebote in deiner Nähe oder stelle selbst etwas ein.</p><button class="primary" onclick="openModal('addModal')">＋ Anzeige erstellen</button></section>
+
+<div class="filters">
+<select id="location" class="field" onchange="render()"><option>📍 Mühlhausen</option><option>📍 Erfurt</option><option>📍 Göttingen</option><option>📍 Berlin</option><option>📍 Deutschland</option></select>
+<select id="category" class="field" onchange="render()"><option value="Alle">🏷️ Alle Kategorien</option><option>Elektronik</option><option>Gaming</option><option>Fahrzeuge</option><option>Mode</option><option>Haus & Garten</option><option>Freizeit</option></select>
+<select id="sort" class="field" onchange="render()"><option value="new">Neueste zuerst</option><option value="low">Preis aufsteigend</option><option value="high">Preis absteigend</option></select>
+<button class="field" onclick="document.getElementById('search').value='';document.getElementById('category').value='Alle';render()">Zurücksetzen</button>
+</div>
+
+<div class="categories" id="cats"></div>
+<div class="toolbar"><h2>Aktuelle Anzeigen</h2><span id="count"></span></div>
+<section class="grid" id="grid"></section>
+</main>
+<footer>© 2026 EmiMarket · Demo-Marktplatz · Kaufen & Verkaufen</footer>
+
+<div class="modalback" id="addModal"><div class="modal"><button class="close" onclick="closeModal('addModal')">×</button><h2>➕ Anzeige erstellen</h2>
+<form id="addForm" class="formgrid">
+<label>Titel<input required name="title" placeholder="z. B. Gaming-PC"></label>
+<label>Preis (€)<input required name="price" type="number" min="0" placeholder="500"></label>
+<label>Kategorie<select name="cat"><option>Elektronik</option><option>Gaming</option><option>Fahrzeuge</option><option>Mode</option><option>Haus & Garten</option><option>Freizeit</option></select></label>
+<label>Ort<input required name="place" value="Mühlhausen"></label>
+<label class="full">Beschreibung<textarea required name="desc" rows="4" placeholder="Beschreibe deinen Artikel..."></textarea></label>
+<label class="full">Emoji/Bildsymbol<input name="emoji" value="📦" maxlength="2"></label>
+<button class="primary full">Anzeige veröffentlichen</button>
+</form></div></div>
+
+<div class="modalback" id="profileModal"><div class="modal"><button class="close" onclick="closeModal('profileModal')">×</button><div class="profile"><div class="avatar">E</div><div><h2 style="margin:0">Emilio</h2><span class="meta">Mitglied seit 2026 · 12 Anzeigen</span></div></div><hr><p><b>⭐ Bewertungen:</b> 5,0 / 5</p><p><b>📍 Standort:</b> Mühlhausen</p><button class="primary" onclick="alert('Profil bearbeiten – Demo')">Profil bearbeiten</button></div></div>
+
+<div class="modalback" id="messagesModal"><div class="modal"><button class="close" onclick="closeModal('messagesModal')">×</button><h2>💬 Nachrichten</h2><div class="messages"><div class="people"><button onclick="chat('Max')">👤 Max<br><small>Ist der PC noch da?</small></button><button onclick="chat('Sophie')">👤 Sophie<br><small>Kann ich morgen kommen?</small></button></div><div class="chat" id="chat"><p class="meta">Wähle einen Chat aus.</p></div></div></div></div>
+
+<script>
+let items=[
+{id:1,title:"Gaming-PC RGB",price:650,cat:"Gaming",place:"Mühlhausen",emoji:"🖥️",desc:"Starker Gaming-PC mit RGB-Beleuchtung.",fav:false},
+{id:2,title:"iPhone 15",price:520,cat:"Elektronik",place:"Erfurt",emoji:"📱",desc:"Sehr guter Zustand, ohne Vertrag.",fav:false},
+{id:3,title:"Mountainbike",price:280,cat:"Freizeit",place:"Mühlhausen",emoji:"🚲",desc:"Schönes Mountainbike für Touren.",fav:false},
+{id:4,title:"PlayStation 5",price:430,cat:"Gaming",place:"Göttingen",emoji:"🎮",desc:"PS5 mit Controller.",fav:false},
+{id:5,title:"Sofa",price:120,cat:"Haus & Garten",place:"Mühlhausen",emoji:"🛋️",desc:"Bequemes Sofa, Abholung.",fav:false},
+{id:6,title:"BMW 3er",price:8900,cat:"Fahrzeuge",place:"Berlin",emoji:"🚗",desc:"Gebrauchtwagen, gepflegt.",fav:false},
+{id:7,title:"Sneaker",price:75,cat:"Mode",place:"Erfurt",emoji:"👟",desc:"Kaum getragen.",fav:false},
+{id:8,title:"Nintendo Switch",price:210,cat:"Gaming",place:"Mühlhausen",emoji:"🕹️",desc:"Mit Dock und Zubehör.",fav:false}
+];
+const cats=["Alle","🏷️ Elektronik","🎮 Gaming","🚗 Fahrzeuge","👕 Mode","🏠 Haus & Garten","⚽ Freizeit"];
+function openModal(id){document.getElementById(id).style.display="flex"}
+function closeModal(id){document.getElementById(id).style.display="none"}
+function toggleFav(id){let x=items.find(i=>i.id===id);x.fav=!x.fav;render()}
+function render(){
+ const q=document.getElementById('search').value.toLowerCase(), c=document.getElementById('category').value, s=document.getElementById('sort').value;
+ let arr=items.filter(x=>(c==="Alle"||x.cat===c)&&(!q||(x.title+" "+x.desc+" "+x.cat).toLowerCase().includes(q)));
+ if(s==="low")arr.sort((a,b)=>a.price-b.price); if(s==="high")arr.sort((a,b)=>b.price-a.price);
+ document.getElementById('count').textContent=arr.length+" Anzeigen";
+ document.getElementById('grid').innerHTML=arr.length?arr.map(x=>`<article class="card"><button class="heart ${x.fav?'on':''}" onclick="toggleFav(${x.id})">${x.fav?'♥':'♡'}</button><div class="pic">${x.emoji}</div><div class="cardbody"><div class="title">${x.title}</div><div class="price">${x.price.toLocaleString('de-DE')} €</div><div class="meta">📍 ${x.place} · ${x.cat}</div><button class="field" style="margin-top:10px;width:100%" onclick="showItem(${x.id})">Anzeige ansehen</button></div></article>`).join(""):'<div class="empty">😕 Keine passenden Anzeigen gefunden.</div>';
+}
+function showItem(id){let x=items.find(i=>i.id===id);alert(`${x.title}\n\n${x.price} € · ${x.place}\n\n${x.desc}\n\n💬 Mit Verkäufer schreiben – Demo`)}
+function chat(name){document.getElementById('chat').innerHTML=`<h3>👤 ${name}</h3><div class="bubble">${name}: Ist der Artikel noch da?</div><div class="bubble me">Ja, er ist noch verfügbar 😊</div><div style="display:flex;gap:6px;margin-top:15px"><input class="field" style="flex:1" placeholder="Nachricht..."><button class="primary" onclick="alert('Nachricht gesendet – Demo')">Senden</button></div>`}
+document.getElementById('addForm').addEventListener('submit',e=>{e.preventDefault();let f=new FormData(e.target);items.unshift({id:Date.now(),title:f.get('title'),price:Number(f.get('price')),cat:f.get('cat'),place:f.get('place'),emoji:f.get('emoji')||'📦',desc:f.get('desc'),fav:false});e.target.reset();closeModal('addModal');render();alert('Deine Anzeige wurde veröffentlicht!')});
+document.getElementById('cats').innerHTML=cats.map((x,i)=>`<button class="cat ${i===0?'active':''}" onclick="quickCat('${x.replace(/^\\S+ /,'')}')">${x}</button>`).join('');
+function quickCat(x){document.getElementById('category').value=x||'Alle';render()}
+render();
+</script>
+</body></html>
